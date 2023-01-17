@@ -14,6 +14,7 @@ import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { api } from "../../services/api";
 import { ComicDTO } from "../../DTOS/comic";
 import { useCommics } from "../../hooks/useCommics";
+import { useNavigate, useNavigation } from "react-router-dom";
 
 interface Props {
   modalIsOpen: boolean;
@@ -33,7 +34,9 @@ const customStyles = {
 };
 
 export function ModalCard({ modalIsOpen, closeModal }: Props) {
-  const { commicWithId, commicPrice } = useCommics();
+  const { commicWithId, commicPrice, commicId } = useCommics();
+
+  const navigate = useNavigate();
 
   const formatMath = commicPrice * 5.1;
 
@@ -43,6 +46,10 @@ export function ModalCard({ modalIsOpen, closeModal }: Props) {
     currency: "BRL",
     currencyDisplay: "code",
   });
+
+  function handleGoToCommicSelected() {
+    navigate(`/CommicSelected/${commicId}`);
+  }
 
   return (
     <Modal
@@ -76,7 +83,12 @@ export function ModalCard({ modalIsOpen, closeModal }: Props) {
               </Price>
               {formatMath === 0 ? null : <Info>*Já convertido</Info>}
             </div>
-            <button disabled={formatMath === 0}>Comprar</button>
+            <button
+              disabled={formatMath === 0}
+              onClick={handleGoToCommicSelected}
+            >
+              Comprar
+            </button>
           </div>
         </DescriptionContainer>
       </ModalContainer>

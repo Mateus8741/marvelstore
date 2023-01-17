@@ -1,54 +1,147 @@
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { api } from "../../services/api";
-import { CommicContainer, CommicSelectedContainer, Title } from "./styles";
+import {
+  GoogleMap,
+  Marker,
+  StandaloneSearchBox,
+  useJsApiLoader,
+} from "@react-google-maps/api";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useCommics } from "../../hooks/useCommics";
+import {
+  BuyContainer,
+  CancelButton,
+  CommicContainer,
+  CommicSelectedContainer,
+  Footer,
+  PriceButton,
+  Title,
+  TitlePage,
+  TitlePageContainer,
+} from "./styles";
 
-interface ComicDTO {
-  title?: string;
-  images?: {
-    extension?: string;
-    path?: string;
-  };
-  urls?: {
-    type?: string;
-    url?: string;
-  };
-  thumbnail?: {
-    extension?: string;
-    path?: string;
-  };
-}
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export function CommicSelected() {
-  const [data, setData] = useState<ComicDTO>({});
-  const [modalIsOpen, setIsOpen] = useState(false);
+  const [lat, setLat] = useState<any>();
+  const [lng, setLng] = useState<any>();
 
-  const { id } = useParams();
+  const { commicWithId, commicPrice } = useCommics();
 
-  useEffect(() => {
-    try {
-      api.get(`/comics/${id}`).then((response) => {
-        setData(response.data.data.results[0]);
-        console.log(response.data.data.results[0]);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
+  const navigate = useNavigate();
 
-  function openModal() {
-    setIsOpen(true);
+  function handleConfirmBuy() {
+    toast.success("Compra finalizada!", {
+      position: "top-right",
+      autoClose: 250,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
+
+    setTimeout(() => {
+      navigate("/");
+    }, 1000);
   }
 
-  function closeModal() {
-    setIsOpen(false);
+  function handleCancelBuy() {
+    toast.error("Compra cancelada!", {
+      position: "top-right",
+      autoClose: 250,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
+
+    setTimeout(() => {
+      navigate("/");
+    }, 1000);
   }
+
+  function success(pos: any) {
+    setLat(pos.coords.latitude);
+    setLng(pos.coords.longitude);
+  }
+
+  navigator.geolocation.getCurrentPosition(success);
+
+  const lt = Number(lat);
+  const lg = Number(lng);
+
+  const formatMath = commicPrice * 5.1;
+
+  const formated = formatMath.toFixed(2);
+
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: "AIzaSyDKeobmvSx9FrY2DYuOBO8jwg98WDNwXV8",
+  });
+
+  const containerStyle = {
+    width: "400px",
+    height: "400px",
+    borderRadius: 8,
+  };
+
+  const center = {
+    lat: lt,
+    lng: lg,
+  };
 
   return (
-    <>
-      <CommicSelectedContainer>
-        <p>antes era o "modal"</p>
-      </CommicSelectedContainer>
-    </>
+    <CommicSelectedContainer>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
+      <TitlePageContainer>
+        <TitlePage>Finalizar compra</TitlePage>
+      </TitlePageContainer>
+
+      <BuyContainer>
+        <CommicContainer>
+          <Title>{commicWithId.title}</Title>
+          <img
+            src={`${commicWithId.thumbnail?.path}.${commicWithId.thumbnail?.extension}`}
+            alt="Commic Image"
+          />
+          <p>Preço R$ {formated}</p>
+        </CommicContainer>
+        {isLoaded ? (
+          <GoogleMap
+            mapContainerStyle={containerStyle}
+            center={center}
+            zoom={15}
+          >
+            <Marker position={center} />
+          </GoogleMap>
+        ) : (
+          <></>
+        )}
+      </BuyContainer>
+
+      <Footer>
+        <CancelButton onClick={handleCancelBuy}>Cancelar compra</CancelButton>
+
+        <PriceButton onClick={handleConfirmBuy}>
+          Total:
+          <strong> R$ {formated}</strong>
+        </PriceButton>
+      </Footer>
+    </CommicSelectedContainer>
   );
 }
