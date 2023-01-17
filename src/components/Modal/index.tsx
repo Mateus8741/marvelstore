@@ -1,9 +1,15 @@
-import { CommicContainer, ModalContainer, Title } from "./styles";
+import {
+  CommicContainer,
+  Description,
+  DescriptionContainer,
+  ModalContainer,
+  Price,
+  Title,
+} from "./styles";
 import Modal from "react-modal";
 import { Cards } from "../Card";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { api } from "../../services/api";
-import { useParams } from "react-router-dom";
 import { ComicDTO } from "../../DTOS/comic";
 import { useCommics } from "../../hooks/useCommics";
 
@@ -20,30 +26,35 @@ const customStyles = {
     bottom: "auto",
     marginRight: "-50%",
     transform: "translate(-50%, -50%)",
+    backgroundColor: "black",
   },
 };
 
 export function ModalCard({ modalIsOpen, closeModal }: Props) {
-  const { commic } = useCommics();
+  const { commicWithId } = useCommics();
 
-  // const { id } = useParams();
+  console.log(commicWithId.prices);
 
   return (
-    <ModalContainer>
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        style={customStyles}
-        contentLabel="Example Modal"
-      >
+    <Modal
+      isOpen={modalIsOpen}
+      onRequestClose={closeModal}
+      style={customStyles}
+      contentLabel="Example Modal"
+    >
+      <ModalContainer>
         <CommicContainer>
           <img
-            src={`${commic.thumbnail?.path}.${commic.thumbnail?.extension}`}
+            src={`${commicWithId.thumbnail?.path}.${commicWithId.thumbnail?.extension}`}
             alt="Commic Image"
           />
-          <Title>{commic.title}</Title>
         </CommicContainer>
-      </Modal>
-    </ModalContainer>
+        <DescriptionContainer>
+          <Title>{commicWithId.title}</Title>
+          <Description>{commicWithId.description}</Description>
+          {/* <Price>Valor: R${commicWithId.prices[0].price}</Price> */}
+        </DescriptionContainer>
+      </ModalContainer>
+    </Modal>
   );
 }

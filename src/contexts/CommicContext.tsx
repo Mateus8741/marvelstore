@@ -4,6 +4,8 @@ import { api } from "../services/api";
 
 export interface CommicContextDataProps {
   commic: ComicDTO;
+  getCommicById: (id: number) => void;
+  commicWithId: ComicDTO;
 }
 
 interface Props {
@@ -16,23 +18,17 @@ export const CommicContext = createContext<CommicContextDataProps>(
 
 export function CommicContextProvider({ children }: Props) {
   const [commic, setCommic] = useState<ComicDTO>({} as ComicDTO);
+  const [commicWithId, setCommicWithId] = useState<ComicDTO>({} as ComicDTO);
 
-  async function fetchCommics() {
-    try {
-      const { data } = await api.get(`/comics`);
-      setCommic(data.data.results);
-      console.log(data.data.results);
-    } catch (error) {
-      console.log(error);
-    }
+  async function getCommicById(id: number) {
+    const { data } = await api.get(`/comics/${id}`);
+    setCommicWithId(data.data.results[0]);
   }
-
-  useEffect(() => {
-    fetchCommics();
-  }, []);
 
   const values = {
     commic,
+    getCommicById,
+    commicWithId,
   };
 
   return (

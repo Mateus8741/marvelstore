@@ -8,10 +8,8 @@ interface ResponseData extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export function Cards({ commic, ...rest }: ResponseData) {
-  console.log('LOG DO CARD',commic);
-
   return (
-    <Container key={commic.id} {...rest}>
+    <Container {...rest}>
       <CardContainer>
         <img
           src={`${commic.thumbnail?.path}.${commic.thumbnail?.extension}`}

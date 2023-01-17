@@ -1,48 +1,61 @@
 import styled from "styled-components";
 
 export const ModalContainer = styled.div`
-  .Overlay {
-    background: ${({ theme }) => theme["gray-800"]};
-  }
-`;
+  width: 45rem;
 
-export const CommicSelectedContainer = styled.div`
-  margin-top: 10rem;
-`;
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
 
-export const CommicSelectedContent = styled.button`
-  width: 17rem;
-  background: transparent;
-  border: none;
+  border-radius: 5px;
+  padding: 1rem;
+
+  background-color: ${({ theme }) => theme["gray-900"]};
 `;
 
 export const CommicContainer = styled.div`
-  width: 17rem;
-
-  cursor: pointer;
+  padding: 15rem;
 
   background-color: ${({ theme }) => theme["gray-800"]};
   border-radius: 8px;
-  padding: 1rem;
+  padding: 0.5rem;
   align-items: center;
   justify-content: center;
 
   img {
-    width: 15rem;
-    height: 25rem;
+    width: 10rem;
+    height: 17rem;
     border-radius: 8px;
-  }
-
-  &:hover {
-    transform: translateY(-1rem);
-    transition: 0.5s all;
   }
 `;
 
-export const Title = styled.p`
-  font-size: 20px;
+export const DescriptionContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+export const Title = styled.h2`
+  font-size: 2rem;
   font-weight: bold;
   color: ${({ theme }) => theme["gray-100"]};
-  text-align: center;
-  margin-top: 10px;
+`;
+
+export const Description = styled.p`
+  font-size: 1rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme["gray-400"]};
+  text-align: justify;
+  margin-top: 0.625rem;
+`;
+
+export const Price = styled.p`
+  font-size: 1rem;
+  font-weight: bold;
+  color: ${({ theme }) => theme["gray-100"]};
+  margin-top: 5rem;
+
+  strong {
+    margin-top: 1rem;
+  }
 `;

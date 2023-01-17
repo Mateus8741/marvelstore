@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Cards } from "../../components/Card";
-import { Loading } from "../../components/Loading";
 import { ModalCard } from "../../components/Modal";
 import { ComicDTO } from "../../DTOS/comic";
 import { useCommics } from "../../hooks/useCommics";
@@ -11,41 +9,44 @@ import { HomeContainer } from "./styles";
 export function Home() {
   const [data, setData] = useState<ComicDTO[]>([]);
   const [modalIsOpen, setIsOpen] = useState(false);
-  const [commicId, setCommicId] = useState(0);
 
-  const { commic } = useCommics();
-
-  const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   try {
-  //     api.get("/comics").then((response) => {
-  //       setData(response.data.data.results);
-  //     });
-  //   } catch (error) {}
-  // }, []);
+  const { getCommicById } = useCommics();
 
   function openModal(id: number) {
+    getCommicById(id);
     setIsOpen(true);
-    setCommicId(id);
   }
 
   function closeModal() {
     setIsOpen(false);
   }
 
+  async function fetchCommics() {
+    try {
+      const { data } = await api.get(`/comics`);
+      setData(data.data.results);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    fetchCommics();
+  }, []);
+
   return (
     <HomeContainer>
       <h2>Compre aqui suas HQ's</h2>
       <main>
-        {commic.map((item: ComicDTO) => (
-          <Cards key={item.id} commic={item} onClick={() => {}} />
+        {data.map((item: ComicDTO) => (
+          <Cards
+            key={item.id}
+            commic={item}
+            onClick={() => openModal(item.id)}
+          />
         ))}
       </main>
-      <ModalCard
-        modalIsOpen={modalIsOpen}
-        closeModal={closeModal}
-      />
+      <ModalCard modalIsOpen={modalIsOpen} closeModal={closeModal} />
     </HomeContainer>
   );
 }

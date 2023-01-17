@@ -1,6 +1,10 @@
 export interface ComicDTO {
-  id: string;
+  id: number;
   title: string;
+  description: string;
+  prices: {
+    price: number
+  }
   images: {
     extension: string;
     path: string;
