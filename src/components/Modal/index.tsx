@@ -2,6 +2,8 @@ import {
   CommicContainer,
   Description,
   DescriptionContainer,
+  Indisp,
+  Info,
   ModalContainer,
   Price,
   Title,
@@ -31,9 +33,16 @@ const customStyles = {
 };
 
 export function ModalCard({ modalIsOpen, closeModal }: Props) {
-  const { commicWithId } = useCommics();
+  const { commicWithId, commicPrice } = useCommics();
 
-  console.log(commicWithId.prices);
+  const formatMath = commicPrice * 5.1;
+
+  const formated = formatMath.toLocaleString("pt-br", {
+    style: "decimal",
+    minimumFractionDigits: 2,
+    currency: "BRL",
+    currencyDisplay: "code",
+  });
 
   return (
     <Modal
@@ -51,8 +60,24 @@ export function ModalCard({ modalIsOpen, closeModal }: Props) {
         </CommicContainer>
         <DescriptionContainer>
           <Title>{commicWithId.title}</Title>
-          <Description>{commicWithId.description}</Description>
-          {/* <Price>Valor: R${commicWithId.prices[0].price}</Price> */}
+          <Description>
+            {commicWithId.description === ""
+              ? "Sem descrição"
+              : commicWithId.description}
+          </Description>
+          <div>
+            <div>
+              <Price>
+                {formatMath === 0 ? (
+                  <Indisp>INDISPONÍVEL</Indisp>
+                ) : (
+                  `R$ ${formated}`
+                )}
+              </Price>
+              {formatMath === 0 ? null : <Info>*Já convertido</Info>}
+            </div>
+            <button disabled={formatMath === 0}>Comprar</button>
+          </div>
         </DescriptionContainer>
       </ModalContainer>
     </Modal>
